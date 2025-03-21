@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Loading...</title>
+  <style>
+    body {
+      background-color: #1a1a1a;
+      color: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    .loader {
+      border: 8px solid #444;
+      border-top: 8px solid #4ade80;
+      border-radius: 50%;
+      width: 70px;
+      height: 70px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .text {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: #a3e635;
+    }
+  </style>
+
+  <script>
+    // 👉 เปลี่ยนหน้าอัตโนมัติภายใน 3 วินาที
+    setTimeout(() => {
+      window.location.href = "/home";
+    }, 3000);
+  </script>
+</head>
+<body>
+  <div class="loader"></div>
+  <div class="text">กำลังโหลดระบบตรวจจับสลิป...</div>
+</body>
+</html>

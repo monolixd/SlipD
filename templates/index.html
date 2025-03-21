@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ตรวจจับสลิป</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 ระบบตรวจจับสลิปปลอม</h1>
+
+    <!-- Toggle Dark Mode -->
+    <button id="toggle-dark">🌗 Toggle Dark Mode</button>
+
+    <!-- พื้นที่ Drag & Drop -->
+    <div id="drop-area">
+      <p>ลากรูปภาพมาวางตรงนี้ หรือ</p>
+      <input type="file" id="file-input" accept="image/*">
+      <button id="upload-btn">📤 อัปโหลด</button>
+    </div>
+
+    <!-- Loading / แสดงผล -->
+    <div id="result-section" style="display: none;">
+      <h3>🖼️ ผลลัพธ์จาก AI</h3>
+      <img id="result-image" />
+      <p id="result-label"></p>
+      <div id="confidence-bar-container">
+        <div id="confidence-bar"></div>
+      </div>
+      <button id="reset-btn">🔄 เริ่มใหม่</button>
+    </div>
+  </div>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
