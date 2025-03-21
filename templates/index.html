@@ -4,34 +4,55 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ตรวจจับสลิป</title>
+
+  <!-- Font & SweetAlert2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.5/sweetalert2.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.5/sweetalert2.all.min.js"></script>
+
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
+  <!-- Bubbles Background -->
+  <div class="animation-wrapper">
+    <div class="bubbles"></div>
+  </div>
+
+  <!-- Main Container -->
   <div class="container">
-    <h1>🧠 ระบบตรวจจับสลิปปลอม</h1>
+    <div class="top-buttons">
+      <button id="toggle-dark" aria-label="Toggle Dark Mode">
+        <i class="fas fa-moon"></i>
+      </button>
+    </div>
+    
+    <h1> ระบบตรวจจับสลิปปลอม</h1>
 
-    <!-- Toggle Dark Mode -->
-    <button id="toggle-dark">🌗 Toggle Dark Mode</button>
-
-    <!-- พื้นที่ Drag & Drop -->
+    <!-- Upload Area -->
     <div id="drop-area">
-      <p>ลากรูปภาพมาวางตรงนี้ หรือ</p>
-      <input type="file" id="file-input" accept="image/*">
-      <button id="upload-btn">📤 อัปโหลด</button>
+      <p><i class="fas fa-cloud-upload-alt"></i> ลากรูปภาพมาวางตรงนี้ หรือ</p>
+      <div class="file-upload-wrapper">
+        <input type="file" id="file-input" accept="image/*">
+        <label for="file-input" class="file-upload-btn">เลือกรูปภาพ</label>
+      </div>
+      <button id="upload-btn"><i class="fas fa-upload"></i> ตรวจสอบ</button>
     </div>
 
-    <!-- Loading / แสดงผล -->
-    <div id="result-section" style="display: none;">
-      <h3>🖼️ ผลลัพธ์จาก AI</h3>
+    <!-- Result -->
+    <div id="result-section">
+      <h3><i class="fas fa-robot"></i> ผลลัพธ์จาก AI</h3>
       <img id="result-image" />
       <p id="result-label"></p>
+      <p>ความมั่นใจ</p>
       <div id="confidence-bar-container">
         <div id="confidence-bar"></div>
       </div>
-      <button id="reset-btn">🔄 เริ่มใหม่</button>
+      <button id="reset-btn"><i class="fas fa-redo-alt"></i> เริ่มใหม่</button>
     </div>
   </div>
 
+  <!-- Custom JS -->
   <script src="/static/script.js"></script>
 </body>
 </html>
