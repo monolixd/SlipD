@@ -1,0 +1,350 @@
+@import url("https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap");
+
+:root {
+  --primary: #4ade80;
+  --primary-hover: #22c55e;
+  --primary-dark: #86efac;
+  --bg-light: #f8fafc;
+  --bg-dark: #121826;
+  --text-light: #334155;
+  --text-dark: #e2e8f0;
+  --container-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --container-shadow-dark: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+body {
+  font-family: "Prompt", "Segoe UI", sans-serif;
+  color: var(--text-light);
+  background-color: var(--bg-light);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow-x: hidden;
+}
+
+.animation-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.bubbles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+}
+
+.bubble {
+  position: absolute;
+  bottom: -100px;
+  background-color: var(--primary);
+  opacity: 0.1;
+  border-radius: 50%;
+  animation: rise 10s infinite ease-in;
+}
+
+@keyframes rise {
+  0% {
+    bottom: -100px;
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(100px);
+  }
+  100% {
+    bottom: 1080px;
+    transform: translateX(-100px);
+  }
+}
+
+.container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 30px;
+  border-radius: 24px;
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--container-shadow);
+  z-index: 1;
+  position: relative;
+}
+
+h1,
+h3 {
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--text-light);
+}
+
+h1 {
+  margin-top: 10px;
+  font-size: 2.2rem;
+}
+
+#drop-area {
+  border: 2px dashed #ccc;
+  border-radius: 16px;
+  padding: 40px 30px;
+  margin: 30px auto;
+  background-color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+#drop-area.highlight {
+  border-color: var(--primary);
+  background-color: rgba(74, 222, 128, 0.1);
+  transform: scale(1.02);
+}
+
+#drop-area p {
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+.file-upload-wrapper {
+  position: relative;
+  margin: 15px auto;
+  width: 200px;
+}
+
+#file-input {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.file-upload-btn {
+  font-family: "Prompt", "Segoe UI", sans-serif;
+  display: inline-block;
+  padding: 12px 20px;
+  background-color: #e2e8f0;
+  border-radius: 12px;
+  color: var(--text-light);
+  cursor: pointer;
+  font-weight: 500;
+  width: 100%;
+}
+
+button {
+  display: inline-block;
+  padding: 12px 25px;
+  margin: 15px 0;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  background-color: var(--primary);
+  color: white;
+  box-shadow: 0 4px 10px rgba(74, 222, 128, 0.3);
+}
+
+button:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(74, 222, 128, 0.4);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+#result-section {
+  padding: 20px 0;
+  display: none;
+  text-align: center;
+  font-size: 20px;
+}
+
+#result-image {
+  width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+  margin: 20px 0;
+  border-radius: 16px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+#result-label {
+  font-size: 1.4rem;
+  margin: 15px 0;
+  font-weight: 500;
+  text-align: center;
+}
+
+#confidence-bar-container {
+  background-color: #e2e8f0;
+  border-radius: 30px;
+  overflow: hidden;
+  margin: 20px 0;
+  height: 30px;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#confidence-bar {
+  background: linear-gradient(90deg, var(--primary) 0%, #22c55e 100%);
+  color: white;
+  height: 100%;
+  width: 0%;
+  text-align: center;
+  line-height: 30px;
+  font-weight: 600;
+  transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.top-buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+#toggle-dark {
+  background-color: transparent;
+  color: var(--text-light);
+  box-shadow: none;
+  font-size: 1.5rem;
+  padding: 10px;
+  margin: 0;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#toggle-dark:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: rotate(30deg);
+}
+
+#reset-btn {
+  display: block;
+  margin: 20px auto;
+  padding: 12px 30px;
+}
+
+/* Dark Mode Styles */
+body.dark {
+  background-color: var(--bg-dark);
+  color: var(--text-dark);
+}
+
+body.dark .container {
+  background-color: rgba(30, 41, 59, 0.9);
+  box-shadow: var(--container-shadow-dark);
+}
+
+body.dark h1,
+body.dark h3 {
+  color: var(--text-dark);
+}
+
+body.dark #drop-area {
+  border-color: #475569;
+  background-color: rgba(30, 41, 59, 0.7);
+}
+
+body.dark #drop-area.highlight {
+  border-color: var(--primary-dark);
+  background-color: rgba(134, 239, 172, 0.1);
+}
+
+body.dark .file-upload-btn {
+  background-color: #334155;
+  color: var(--text-dark);
+}
+
+body.dark button {
+  background-color: var(--primary-dark);
+  color: #0f172a;
+  box-shadow: 0 4px 10px rgba(134, 239, 172, 0.2);
+}
+
+body.dark button:hover {
+  background-color: #68dfa5;
+  box-shadow: 0 6px 15px rgba(134, 239, 172, 0.3);
+}
+
+body.dark #confidence-bar-container {
+  background-color: #334155;
+}
+
+body.dark #confidence-bar {
+  background: linear-gradient(90deg, var(--primary-dark) 0%, #68dfa5 100%);
+  color: #0f172a;
+}
+
+body.dark #toggle-dark {
+  color: var(--text-dark);
+}
+
+body.dark #toggle-dark:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+body.dark .bubble {
+  background-color: var(--primary-dark);
+}
+
+/* ปรับแต่ง SweetAlert2 ให้เข้ากับธีม */
+.swal2-popup {
+  font-family: "Prompt", "Segoe UI", sans-serif;
+  border-radius: 20px;
+}
+
+body.dark .swal2-popup {
+  background-color: var(--bg-dark);
+  color: var(--text-dark);
+}
+
+body.dark .swal2-title,
+body.dark .swal2-content {
+  color: var(--text-dark);
+}
+
+body.dark .swal2-success-ring,
+body.dark .swal2-success-line-tip,
+body.dark .swal2-success-line-long {
+  stroke: var(--primary-dark) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    margin: 20px 15px;
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  #drop-area {
+    padding: 30px 20px;
+  }
+}
