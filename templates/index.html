@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ตรวจจับสลิป</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- เพิ่ม SweetAlert2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.5/sweetalert2.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.5/sweetalert2.all.min.js"></script>
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap');
@@ -147,6 +150,7 @@
     }
     
     .file-upload-btn {
+      font-family: 'Prompt', 'Segoe UI', sans-serif;
       display: inline-block;
       padding: 12px 20px;
       background-color: #e2e8f0;
@@ -315,6 +319,28 @@
       background-color: var(--primary-dark);
     }
     
+    /* ปรับแต่ง SweetAlert2 ให้เข้ากับธีม */
+    .swal2-popup {
+      font-family: 'Prompt', 'Segoe UI', sans-serif;
+      border-radius: 20px;
+    }
+    
+    body.dark .swal2-popup {
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+    }
+    
+    body.dark .swal2-title, 
+    body.dark .swal2-content {
+      color: var(--text-dark);
+    }
+    
+    body.dark .swal2-success-ring,
+    body.dark .swal2-success-line-tip,
+    body.dark .swal2-success-line-long {
+      stroke: var(--primary-dark) !important;
+    }
+    
     /* Responsive */
     @media (max-width: 768px) {
       .container {
@@ -439,14 +465,23 @@
       }
     });
 
-    // Upload functionality - คงฟังก์ชันเดิมที่ส่งข้อมูลไปยัง '/predict'
+    // Upload functionality - ปรับปรุงการแจ้งเตือนด้วย SweetAlert2
     uploadBtn.addEventListener("click", async () => {
       const file = fileInput.files[0];
       if (!file) {
-        // Animate if no file
+        // ใช้ SweetAlert2 แทน alert ปกติ
+        Swal.fire({
+          title: 'โปรดเลือกรูปภาพ!',
+          text: 'กรุณาเลือกรูปภาพที่ต้องการตรวจสอบก่อน',
+          icon: 'warning',
+          confirmButtonText: 'ตกลง',
+          confirmButtonColor: document.body.classList.contains('dark') ? '#86efac' : '#4ade80'
+        });
+        
+        // ยังคงใช้ animation เดิม
         dropArea.classList.add("highlight");
         setTimeout(() => dropArea.classList.remove("highlight"), 800);
-        return alert("กรุณาเลือกรูปภาพก่อน!");
+        return;
       }
 
       const formData = new FormData();
@@ -478,6 +513,15 @@
         }, 300);
         
       } catch (error) {
+        // ใช้ SweetAlert2 สำหรับการแสดงข้อผิดพลาด
+        Swal.fire({
+          title: 'เกิดข้อผิดพลาด!',
+          text: 'ไม่สามารถประมวลผลรูปภาพได้ กรุณาลองใหม่อีกครั้ง',
+          icon: 'error',
+          confirmButtonText: 'ตกลง',
+          confirmButtonColor: document.body.classList.contains('dark') ? '#86efac' : '#4ade80'
+        });
+        
         resultLabel.innerHTML = "<i class='fas fa-exclamation-triangle'></i> มีข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
         console.error("Error:", error);
       }
@@ -494,7 +538,7 @@
       confidenceBar.innerText = "";
     });
 
-    // Dark Mode toggle
+    // Dark Mode toggle - ปรับปรุงให้ปรับธีม SweetAlert2 ด้วย
     toggleDark.addEventListener("click", () => {
       document.body.classList.toggle("dark");
       const icon = toggleDark.querySelector('i');
