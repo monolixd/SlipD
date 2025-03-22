@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ตรวจจับสลิป</title>
-
   <!-- Font & SweetAlert2 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.5/sweetalert2.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.5/sweetalert2.all.min.js"></script>
-
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/static/style.css" />
 </head>
+
 <body>
   <!-- Bubbles Background -->
   <div class="animation-wrapper">
@@ -26,7 +26,7 @@
         <i class="fas fa-moon"></i>
       </button>
     </div>
-    
+
     <h1><i class="fas fa-shield-alt"></i> ระบบตรวจจับสลิปปลอม</h1>
 
     <!-- Upload Area -->
@@ -42,7 +42,31 @@
     <!-- Result Section -->
     <div id="result-section">
       <h3><i class="fas fa-robot"></i> ผลลัพธ์จาก AI</h3>
-      <div id="results-wrapper"></div>
+
+      <!-- Summary Section (New) -->
+      <div id="summary-section">
+        <div class="summary-card">
+          <div class="summary-item">
+            <i class="fas fa-check-circle"></i>
+            <span id="real-count">0</span>
+            <span>สลิปจริง</span>
+          </div>
+          <div class="summary-item">
+            <i class="fas fa-times-circle"></i>
+            <span id="fake-count">0</span>
+            <span>สลิปปลอม</span>
+          </div>
+          <div class="summary-item">
+            <i class="fas fa-images"></i>
+            <span id="total-count">0</span>
+            <span>รูปทั้งหมด</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Grid (Modified) -->
+      <div id="results-wrapper" class="results-grid"></div>
+
       <button id="reset-btn"><i class="fas fa-redo-alt"></i> เริ่มใหม่</button>
     </div>
   </div>
@@ -50,4 +74,5 @@
   <!-- Custom JS -->
   <script src="/static/script.js"></script>
 </body>
+
 </html>

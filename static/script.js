@@ -29,6 +29,11 @@ const resultsWrapper = document.getElementById("results-wrapper");
 const resetBtn = document.getElementById("reset-btn");
 const toggleDark = document.getElementById("toggle-dark");
 
+// Summary elements
+const realCount = document.getElementById("real-count");
+const fakeCount = document.getElementById("fake-count");
+const totalCount = document.getElementById("total-count");
+
 // Create background animation
 createBubbles();
 
@@ -63,6 +68,52 @@ fileInput.addEventListener("change", () => {
   }
 });
 
+// Reset counters
+function resetCounters() {
+  realCount.textContent = "0";
+  fakeCount.textContent = "0";
+  totalCount.textContent = "0";
+}
+
+// Update counters
+function updateCounters(label) {
+  totalCount.textContent = parseInt(totalCount.textContent) + 1;
+
+  if (label.includes("จริง")) {
+    realCount.textContent = parseInt(realCount.textContent) + 1;
+  } else if (label.includes("ปลอม")) {
+    fakeCount.textContent = parseInt(fakeCount.textContent) + 1;
+  }
+}
+
+// Function to show full image
+function showFullImage(imageSrc, label) {
+  const labelClass = label.includes("จริง") ? "จริง" : "ปลอม";
+  const titleText = label.includes("จริง")
+    ? "สลิปการโอนเงินจริง"
+    : "สลิปการโอนเงินปลอม";
+  const iconColor = label.includes("จริง") ? "#10b981" : "#ef4444";
+
+  Swal.fire({
+    title: titleText,
+    imageUrl: imageSrc,
+    imageAlt: label,
+    imageWidth: "100%",
+    imageHeight: "auto",
+    width: "80%",
+    padding: "20px",
+    confirmButtonText: "ปิด",
+    confirmButtonColor: document.body.classList.contains("dark")
+      ? "#86efac"
+      : "#4ade80",
+    background: document.body.classList.contains("dark") ? "#121826" : "#fff",
+    color: document.body.classList.contains("dark") ? "#e2e8f0" : "#334155",
+    customClass: {
+      image: "swal-image-large",
+    },
+  });
+}
+
 // Upload multiple images
 uploadBtn.addEventListener("click", async () => {
   const files = fileInput.files;
@@ -82,7 +133,9 @@ uploadBtn.addEventListener("click", async () => {
     return;
   }
 
-  resultsWrapper.innerHTML = ""; // ล้างผลลัพธ์เดิม
+  // ล้างผลลัพธ์เดิมและรีเซ็ตตัวนับ
+  resultsWrapper.innerHTML = "";
+  resetCounters();
   resultSection.style.display = "block";
 
   for (let i = 0; i < files.length; i++) {
@@ -106,14 +159,26 @@ uploadBtn.addEventListener("click", async () => {
       });
 
       const data = await res.json();
+      const imageDataUrl = `data:image/jpeg;base64,${data.image}`;
 
+      // เพิ่มคลาสตามผลการตรวจสอบ (จริง/ปลอม) และเพิ่มปุ่ม "ดูรูปเต็ม"
       resultCard.innerHTML = `
-        <img src="data:image/jpeg;base64,${data.image}" class="result-image" />
-        <p class="result-label">${data.label}</p>
+        <img src="${imageDataUrl}" class="result-image" />
+        <p class="result-label ${data.label}">${data.label}</p>
         <div class="confidence-bar-container">
-          <div class="confidence-bar" style="width: ${data.confidence}%;">${data.confidence}%</div>
+          <div class="confidence-bar ${data.label}" style="width: ${data.confidence}%;">${data.confidence}%</div>
         </div>
+        <button class="view-full-btn"><i class="fas fa-search-plus"></i> ดูรูปเต็ม</button>
       `;
+
+      // เพิ่ม Event Listener สำหรับปุ่ม "ดูรูปเต็ม"
+      const viewFullBtn = resultCard.querySelector(".view-full-btn");
+      viewFullBtn.addEventListener("click", () => {
+        showFullImage(imageDataUrl, data.label);
+      });
+
+      // อัพเดทตัวนับ
+      updateCounters(data.label);
     } catch (error) {
       resultCard.innerHTML = `
         <p class="result-label error"><i class='fas fa-exclamation-triangle'></i> ประมวลผลไม่สำเร็จ</p>
@@ -129,6 +194,7 @@ resetBtn.addEventListener("click", () => {
   document.querySelector(".file-upload-btn").textContent = "เลือกรูปภาพ";
   resultsWrapper.innerHTML = "";
   resultSection.style.display = "none";
+  resetCounters();
 });
 
 // Dark Mode toggle
