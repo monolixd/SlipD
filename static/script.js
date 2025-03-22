@@ -1,154 +1,207 @@
- // Create animated background bubbles
-    function createBubbles() {
-      const bubbles = document.querySelector('.bubbles');
-      const count = 15;
-      
-      for (let i = 0; i < count; i++) {
-        const bubble = document.createElement('div');
-        bubble.className = 'bubble';
-        
-        const size = Math.random() * 100 + 50;
-        const x = Math.random() * 100;
-        
-        bubble.style.width = `${size}px`;
-        bubble.style.height = `${size}px`;
-        bubble.style.left = `${x}%`;
-        bubble.style.animationDelay = `${Math.random() * 10}s`;
-        bubble.style.animationDuration = `${Math.random() * 10 + 10}s`;
-        
-        bubbles.appendChild(bubble);
-      }
+// Create animated background bubbles
+function createBubbles() {
+  const bubbles = document.querySelector(".bubbles");
+  const count = 15;
+
+  for (let i = 0; i < count; i++) {
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+
+    const size = Math.random() * 100 + 50;
+    const x = Math.random() * 100;
+
+    bubble.style.width = `${size}px`;
+    bubble.style.height = `${size}px`;
+    bubble.style.left = `${x}%`;
+    bubble.style.animationDelay = `${Math.random() * 10}s`;
+    bubble.style.animationDuration = `${Math.random() * 10 + 10}s`;
+
+    bubbles.appendChild(bubble);
+  }
+}
+
+// DOM elements
+const fileInput = document.getElementById("file-input");
+const uploadBtn = document.getElementById("upload-btn");
+const dropArea = document.getElementById("drop-area");
+const resultSection = document.getElementById("result-section");
+const resultsWrapper = document.getElementById("results-wrapper");
+const resetBtn = document.getElementById("reset-btn");
+const toggleDark = document.getElementById("toggle-dark");
+
+// Summary elements
+const realCount = document.getElementById("real-count");
+const fakeCount = document.getElementById("fake-count");
+const totalCount = document.getElementById("total-count");
+
+// Create background animation
+createBubbles();
+
+// Drag & Drop functionality
+dropArea.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  dropArea.classList.add("highlight");
+});
+
+dropArea.addEventListener("dragleave", () => {
+  dropArea.classList.remove("highlight");
+});
+
+dropArea.addEventListener("drop", (e) => {
+  e.preventDefault();
+  dropArea.classList.remove("highlight");
+  fileInput.files = e.dataTransfer.files;
+
+  if (fileInput.files.length > 0) {
+    document.querySelector(
+      ".file-upload-btn"
+    ).textContent = `${fileInput.files.length} ไฟล์ที่เลือกไว้`;
+  }
+});
+
+// Show filename when selected
+fileInput.addEventListener("change", () => {
+  if (fileInput.files.length > 0) {
+    document.querySelector(
+      ".file-upload-btn"
+    ).textContent = `${fileInput.files.length} ไฟล์ที่เลือกไว้`;
+  }
+});
+
+// Reset counters
+function resetCounters() {
+  realCount.textContent = "0";
+  fakeCount.textContent = "0";
+  totalCount.textContent = "0";
+}
+
+// Update counters
+function updateCounters(label) {
+  totalCount.textContent = parseInt(totalCount.textContent) + 1;
+
+  if (label.includes("จริง")) {
+    realCount.textContent = parseInt(realCount.textContent) + 1;
+  } else if (label.includes("ปลอม")) {
+    fakeCount.textContent = parseInt(fakeCount.textContent) + 1;
+  }
+}
+
+// Function to show full image
+function showFullImage(imageSrc, label) {
+  const labelClass = label.includes("จริง") ? "จริง" : "ปลอม";
+  const titleText = label.includes("จริง")
+    ? "สลิปการโอนเงินจริง"
+    : "สลิปการโอนเงินปลอม";
+  const iconColor = label.includes("จริง") ? "#10b981" : "#ef4444";
+
+  Swal.fire({
+    title: titleText,
+    imageUrl: imageSrc,
+    imageAlt: label,
+    imageWidth: "100%",
+    imageHeight: "auto",
+    width: "80%",
+    padding: "20px",
+    confirmButtonText: "ปิด",
+    confirmButtonColor: document.body.classList.contains("dark")
+      ? "#86efac"
+      : "#4ade80",
+    background: document.body.classList.contains("dark") ? "#121826" : "#fff",
+    color: document.body.classList.contains("dark") ? "#e2e8f0" : "#334155",
+    customClass: {
+      image: "swal-image-large",
+    },
+  });
+}
+
+// Upload multiple images
+uploadBtn.addEventListener("click", async () => {
+  const files = fileInput.files;
+
+  if (!files.length) {
+    Swal.fire({
+      title: "โปรดเลือกรูปภาพ!",
+      text: "กรุณาเลือกรูปภาพอย่างน้อย 1 ไฟล์",
+      icon: "warning",
+      confirmButtonText: "ตกลง",
+      confirmButtonColor: document.body.classList.contains("dark")
+        ? "#86efac"
+        : "#4ade80",
+    });
+    dropArea.classList.add("highlight");
+    setTimeout(() => dropArea.classList.remove("highlight"), 800);
+    return;
+  }
+
+  // ล้างผลลัพธ์เดิมและรีเซ็ตตัวนับ
+  resultsWrapper.innerHTML = "";
+  resetCounters();
+  resultSection.style.display = "block";
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    // กรอบผลลัพธ์สำหรับแต่ละภาพ
+    const resultCard = document.createElement("div");
+    resultCard.className = "result-card";
+    resultCard.innerHTML = `
+      <p><i class='fas fa-spinner fa-spin'></i> กำลังประมวลผล...</p>
+    `;
+    resultsWrapper.appendChild(resultCard);
+
+    try {
+      const res = await fetch("/predict", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      const imageDataUrl = `data:image/jpeg;base64,${data.image}`;
+
+      // เพิ่มคลาสตามผลการตรวจสอบ (จริง/ปลอม) และเพิ่มปุ่ม "ดูรูปเต็ม"
+      resultCard.innerHTML = `
+        <img src="${imageDataUrl}" class="result-image" />
+        <p class="result-label ${data.label}">${data.label}</p>
+        <div class="confidence-bar-container">
+          <div class="confidence-bar ${data.label}" style="width: ${data.confidence}%;">${data.confidence}%</div>
+        </div>
+        <button class="view-full-btn"><i class="fas fa-search-plus"></i> ดูรูปเต็ม</button>
+      `;
+
+      // เพิ่ม Event Listener สำหรับปุ่ม "ดูรูปเต็ม"
+      const viewFullBtn = resultCard.querySelector(".view-full-btn");
+      viewFullBtn.addEventListener("click", () => {
+        showFullImage(imageDataUrl, data.label);
+      });
+
+      // อัพเดทตัวนับ
+      updateCounters(data.label);
+    } catch (error) {
+      resultCard.innerHTML = `
+        <p class="result-label error"><i class='fas fa-exclamation-triangle'></i> ประมวลผลไม่สำเร็จ</p>
+      `;
+      console.error("Error:", error);
     }
-    
-    // DOM elements
-    const fileInput = document.getElementById("file-input");
-    const uploadBtn = document.getElementById("upload-btn");
-    const dropArea = document.getElementById("drop-area");
-    const resultSection = document.getElementById("result-section");
-    const resultImage = document.getElementById("result-image");
-    const resultLabel = document.getElementById("result-label");
-    const confidenceBar = document.getElementById("confidence-bar");
-    const resetBtn = document.getElementById("reset-btn");
-    const toggleDark = document.getElementById("toggle-dark");
+  }
+});
 
-    // Create background animation
-    createBubbles();
+// Reset functionality
+resetBtn.addEventListener("click", () => {
+  fileInput.value = "";
+  document.querySelector(".file-upload-btn").textContent = "เลือกรูปภาพ";
+  resultsWrapper.innerHTML = "";
+  resultSection.style.display = "none";
+  resetCounters();
+});
 
-    // Drag & Drop functionality
-    dropArea.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      dropArea.classList.add("highlight");
-    });
-
-    dropArea.addEventListener("dragleave", () => {
-      dropArea.classList.remove("highlight");
-    });
-
-    dropArea.addEventListener("drop", (e) => {
-      e.preventDefault();
-      dropArea.classList.remove("highlight");
-      fileInput.files = e.dataTransfer.files;
-      
-      // Show file name if selected
-      if (fileInput.files.length > 0) {
-        const fileName = fileInput.files[0].name;
-        document.querySelector('.file-upload-btn').textContent = fileName.length > 20 
-          ? fileName.substring(0, 17) + '...' 
-          : fileName;
-      }
-    });
-    
-    // Show filename when selected
-    fileInput.addEventListener("change", () => {
-      if (fileInput.files.length > 0) {
-        const fileName = fileInput.files[0].name;
-        document.querySelector('.file-upload-btn').textContent = fileName.length > 20 
-          ? fileName.substring(0, 17) + '...' 
-          : fileName;
-      }
-    });
-
-    // Upload functionality - ปรับปรุงการแจ้งเตือนด้วย SweetAlert2
-    uploadBtn.addEventListener("click", async () => {
-      const file = fileInput.files[0];
-      if (!file) {
-        // ใช้ SweetAlert2 แทน alert ปกติ
-        Swal.fire({
-          title: 'โปรดเลือกรูปภาพ!',
-          text: 'กรุณาเลือกรูปภาพที่ต้องการตรวจสอบก่อน',
-          icon: 'warning',
-          confirmButtonText: 'ตกลง',
-          confirmButtonColor: document.body.classList.contains('dark') ? '#86efac' : '#4ade80'
-        });
-        
-        // ยังคงใช้ animation เดิม
-        dropArea.classList.add("highlight");
-        setTimeout(() => dropArea.classList.remove("highlight"), 800);
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("file", file);
-
-      resultLabel.innerHTML = "<i class='fas fa-spinner fa-spin'></i> กำลังประมวลผล...";
-      resultSection.style.display = "block";
-      
-      try {
-        // ส่งข้อมูลไปยัง '/predict' ตามฟังก์ชันเดิม
-        const res = await fetch("/predict", {
-          method: "POST",
-          body: formData,
-        });
-
-        const data = await res.json();
-        
-        // แสดงผลลัพธ์
-        resultImage.src = `data:image/jpeg;base64,${data.image}`;
-        resultLabel.innerText = data.label;
-        
-        // Animate confidence bar
-        confidenceBar.style.width = "0%";
-        confidenceBar.innerText = "";
-        
-        setTimeout(() => {
-          confidenceBar.style.width = `${data.confidence}%`;
-          confidenceBar.innerText = `${data.confidence}%`;
-        }, 300);
-        
-      } catch (error) {
-        // ใช้ SweetAlert2 สำหรับการแสดงข้อผิดพลาด
-        Swal.fire({
-          title: 'เกิดข้อผิดพลาด!',
-          text: 'ไม่สามารถประมวลผลรูปภาพได้ กรุณาลองใหม่อีกครั้ง',
-          icon: 'error',
-          confirmButtonText: 'ตกลง',
-          confirmButtonColor: document.body.classList.contains('dark') ? '#86efac' : '#4ade80'
-        });
-        
-        resultLabel.innerHTML = "<i class='fas fa-exclamation-triangle'></i> มีข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
-        console.error("Error:", error);
-      }
-    });
-
-    // Reset functionality
-    resetBtn.addEventListener("click", () => {
-      fileInput.value = "";
-      document.querySelector('.file-upload-btn').textContent = "เลือกรูปภาพ";
-      resultSection.style.display = "none";
-      resultImage.src = "";
-      resultLabel.innerText = "";
-      confidenceBar.style.width = "0%";
-      confidenceBar.innerText = "";
-    });
-
-    // Dark Mode toggle - ปรับปรุงให้ปรับธีม SweetAlert2 ด้วย
-    toggleDark.addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-      const icon = toggleDark.querySelector('i');
-      
-      if (document.body.classList.contains('dark')) {
-        icon.className = 'fas fa-sun';
-      } else {
-        icon.className = 'fas fa-moon';
-      }
-    });
+// Dark Mode toggle
+toggleDark.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+  const icon = toggleDark.querySelector("i");
+  icon.className = document.body.classList.contains("dark")
+    ? "fas fa-sun"
+    : "fas fa-moon";
+});
