@@ -17,7 +17,7 @@ templates = Jinja2Templates(directory="templates")
 
 # 🚀 โหลดโมเดล YOLOv8
 try:
-    model = YOLO("best.pt")
+    model = YOLO("bestV8Nano.pt")
 except Exception as e:
     raise RuntimeError(f"❌ โหลดโมเดลไม่สำเร็จ: {e}")
 
