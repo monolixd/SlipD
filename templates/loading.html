@@ -4,49 +4,168 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Loading...</title>
+  <title>SlipD - กำลังโหลด</title>
+  <link rel="icon" href="/static/favicon.png" type="image/png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap');
     body {
-      background-color: #1a1a1a;
+      background-color: #ffffff;
       color: #ffffff;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Prompt', 'Segoe UI', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       flex-direction: column;
+      margin: 0;
+      overflow: hidden;
     }
 
-    .loader {
-      border: 8px solid #444;
-      border-top: 8px solid #4ade80;
-      border-radius: 50%;
-      width: 70px;
-      height: 70px;
-      animation: spin 1s linear infinite;
+    .container {
+      text-align: center;
+      position: relative;
     }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    .logo {
+      font-size: 3.5rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .logo-text {
+      display: inline-block;
+      position: relative;
+    }
+
+    .logo-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #121826, #323a4b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: fill 2.5s ease-in-out infinite;
+      overflow: hidden;
+    }
+
+    .logo-outline {
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    @keyframes fill {
+      0% { width: 0%; }
+      50% { width: 100%; }
+      100% { width: 0%; }
     }
 
     .text {
       margin-top: 20px;
       font-size: 1.2rem;
-      color: #a3e635;
+      color: #121826;
+      opacity: 0;
+      animation: fadeIn 1s ease-in-out forwards;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    .particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .particle {
+      position: absolute;
+      background-color: rgba(163, 230, 53, 0.2);
+      border-radius: 50%;
+      pointer-events: none;
     }
   </style>
 
   <script>
-    // 👉 เปลี่ยนหน้าอัตโนมัติภายใน 3 วินาที
+    // Auto redirect after 3 seconds
     setTimeout(() => {
       window.location.href = "/home";
     }, 3000);
+
+    // Create particles when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      const particlesContainer = document.querySelector('.particles');
+      const particleCount = 20;
+      
+      for (let i = 0; i < particleCount; i++) {
+        createParticle(particlesContainer);
+      }
+    });
+
+    function createParticle(container) {
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+      
+      // Random size between 5px and 20px
+      const size = Math.random() * 15 + 5;
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+      
+      // Random position
+      const posX = Math.random() * 100;
+      const posY = Math.random() * 100;
+      particle.style.left = `${posX}%`;
+      particle.style.top = `${posY}%`;
+      
+      // Random opacity
+      particle.style.opacity = Math.random() * 0.5 + 0.1;
+      
+      // Animation
+      const duration = Math.random() * 10 + 10;
+      particle.style.animation = `float ${duration}s linear infinite`;
+      particle.style.animationDelay = `${Math.random() * 5}s`;
+      
+      // Add floating animation
+      const keyframes = `
+        @keyframes float {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+          }
+          50% {
+            transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(180deg);
+          }
+          100% {
+            transform: translate(0, 0) rotate(360deg);
+          }
+        }
+      `;
+      
+      const style = document.createElement('style');
+      style.textContent = keyframes;
+      document.head.appendChild(style);
+      
+      container.appendChild(particle);
+    }
   </script>
 </head>
 <body>
-  <div class="loader"></div>
-  <div class="text">กำลังโหลดระบบตรวจจับสลิป...</div>
+  <div class="particles"></div>
+  <div class="container">
+    <div class="logo">
+      <span class="logo-outline">SlipD</span>
+      <div class="logo-fill">SlipD</div>
+    </div>
+    <div class="text">กำลังโหลดระบบตรวจจับสลิป...</div>
+  </div>
 </body>
 </html>

@@ -17,7 +17,7 @@ templates = Jinja2Templates(directory="templates")
 
 # 🚀 โหลดโมเดล YOLOv8
 try:
-    model = YOLO("best.pt")
+    model = YOLO("bestV8Nano.pt")
 except Exception as e:
     raise RuntimeError(f"❌ โหลดโมเดลไม่สำเร็จ: {e}")
 
@@ -42,6 +42,9 @@ async def predict_image(file: UploadFile = File(...)):
 
         if image is None:
             raise HTTPException(status_code=400, detail="❌ ไม่สามารถอ่านภาพได้ กรุณาอัปโหลดไฟล์รูปภาพ")
+
+        # ✅ บีบอัดภาพให้เป็นขนาด 640x640 (ตาม YOLOv8)
+        image = cv2.resize(image, (640, 640), interpolation=cv2.INTER_AREA)
 
         # ✅ รัน YOLOv8 ตรวจจับวัตถุ
         results = model.predict(image, conf=0.5)
