@@ -205,3 +205,4 @@ toggleDark.addEventListener("click", () => {
     ? "fas fa-sun"
     : "fas fa-moon";
 });
+

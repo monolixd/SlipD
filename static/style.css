@@ -510,3 +510,212 @@ body.dark .swal2-success-line-long {
     grid-template-columns: 1fr;
   }
 }
+
+.welcome-dialog {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.5);
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  max-width: 500px;
+  width: 90%;
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+}
+
+.welcome-dialog.show {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.dialog-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.close-dialog {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  transition: transform 0.2s ease;
+}
+
+.close-dialog:hover {
+  color: #000;
+  transform: scale(1.1);
+}
+
+.dialog-content {
+  margin-bottom: 15px;
+}
+
+.dialog-content p {
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.instruction-item {
+  display: flex;
+  margin-bottom: 10px;
+  align-items: flex-start;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+
+.welcome-dialog.show .instruction-item {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.welcome-dialog.show .instruction-item:nth-child(1) {
+  transition-delay: 0.1s;
+}
+
+.welcome-dialog.show .instruction-item:nth-child(2) {
+  transition-delay: 0.2s;
+}
+
+.welcome-dialog.show .instruction-item:nth-child(3) {
+  transition-delay: 0.3s;
+}
+
+.welcome-dialog.show .instruction-item:nth-child(4) {
+  transition-delay: 0.4s;
+}
+
+.instruction-item i {
+  margin-right: 10px;
+  margin-top: 3px;
+  color: #4285f4;
+}
+
+.dialog-footer {
+  text-align: right;
+}
+
+.got-it-btn {
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.got-it-btn:hover {
+  background-color: #3367d6;
+  transform: scale(1.05);
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.overlay.show {
+  opacity: 1;
+}
+
+/* Updated top buttons layout */
+.top-buttons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+  /* ปรับ layout ปุ่มบนให้ help-button อยู่ซ้าย */
+.top-buttons {
+  display: flex;
+  justify-content: space-between; /* ปุ่มซ้าย-ขวาแยกกัน */
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+/* Help button style (Minimal + No background) */
+#help-button {
+  background: transparent !important;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  box-shadow: none !important;
+  font-size: 20px;
+}
+
+#help-button:hover {
+  opacity: 0.9;
+  color: #333;
+  background: transparent !important;
+}
+
+/* Dark mode */
+body.dark-mode #help-button {
+  color: #bbb;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode #help-button:hover {
+  color: #fff;
+  background: transparent !important;
+}
+
+/* Dark mode for dialog */
+body.dark-mode .welcome-dialog {
+  background-color: #333;
+  color: #fff;
+}
+
+body.dark-mode .close-dialog {
+  color: #ccc;
+}
+
+body.dark-mode .close-dialog:hover {
+  color: #fff;
+}
+
+body.dark-mode .got-it-btn {
+  background-color: #2196F3;
+}
+
+body.dark-mode .got-it-btn:hover {
+  background-color: #0b7dda;
+}
+
+body.dark-mode .instruction-item i {
+  color: #2196F3;
+}
