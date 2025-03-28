@@ -28,6 +28,7 @@ const resultSection = document.getElementById("result-section");
 const resultsWrapper = document.getElementById("results-wrapper");
 const resetBtn = document.getElementById("reset-btn");
 const toggleDark = document.getElementById("toggle-dark");
+const loadingAnimation = document.getElementById("loading-animation");
 
 // Summary elements
 const realCount = document.getElementById("real-count");
@@ -133,26 +134,20 @@ uploadBtn.addEventListener("click", async () => {
     return;
   }
 
+  // แสดงแอนิเมชันรอและซ่อนส่วนผลลัพธ์
+  loadingAnimation.style.display = "block";
+  resultSection.style.display = "none";
+
   // ล้างผลลัพธ์เดิมและรีเซ็ตตัวนับ
   resultsWrapper.innerHTML = "";
   resetCounters();
-  resultSection.style.display = "block";
 
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
+  try {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const formData = new FormData();
+      formData.append("file", file);
 
-    const formData = new FormData();
-    formData.append("file", file);
-
-    // กรอบผลลัพธ์สำหรับแต่ละภาพ
-    const resultCard = document.createElement("div");
-    resultCard.className = "result-card";
-    resultCard.innerHTML = `
-      <p><i class='fas fa-spinner fa-spin'></i> กำลังประมวลผล...</p>
-    `;
-    resultsWrapper.appendChild(resultCard);
-
-    try {
       const res = await fetch("/predict", {
         method: "POST",
         body: formData,
@@ -161,7 +156,8 @@ uploadBtn.addEventListener("click", async () => {
       const data = await res.json();
       const imageDataUrl = `data:image/jpeg;base64,${data.image}`;
 
-      // เพิ่มคลาสตามผลการตรวจสอบ (จริง/ปลอม) และเพิ่มปุ่ม "ดูรูปเต็ม"
+      const resultCard = document.createElement("div");
+      resultCard.className = "result-card";
       resultCard.innerHTML = `
         <img src="${imageDataUrl}" class="result-image" />
         <p class="result-label ${data.label}">${data.label}</p>
@@ -171,20 +167,29 @@ uploadBtn.addEventListener("click", async () => {
         <button class="view-full-btn"><i class="fas fa-search-plus"></i> ดูรูปเต็ม</button>
       `;
 
-      // เพิ่ม Event Listener สำหรับปุ่ม "ดูรูปเต็ม"
       const viewFullBtn = resultCard.querySelector(".view-full-btn");
       viewFullBtn.addEventListener("click", () => {
         showFullImage(imageDataUrl, data.label);
       });
 
-      // อัพเดทตัวนับ
+      resultsWrapper.appendChild(resultCard);
       updateCounters(data.label);
-    } catch (error) {
-      resultCard.innerHTML = `
-        <p class="result-label error"><i class='fas fa-exclamation-triangle'></i> ประมวลผลไม่สำเร็จ</p>
-      `;
-      console.error("Error:", error);
     }
+  } catch (error) {
+    console.error("Error:", error);
+    Swal.fire({
+      title: "เกิดข้อผิดพลาด!",
+      text: "ไม่สามารถประมวลผลรูปภาพได้",
+      icon: "error",
+      confirmButtonText: "ตกลง",
+      confirmButtonColor: document.body.classList.contains("dark")
+        ? "#86efac"
+        : "#4ade80",
+    });
+  } finally {
+    // ซ่อนแอนิเมชันรอและแสดงส่วนผลลัพธ์
+    loadingAnimation.style.display = "none";
+    resultSection.style.display = "block";
   }
 });
 

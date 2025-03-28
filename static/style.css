@@ -947,3 +947,38 @@ input,
 button {
   -webkit-tap-highlight-color: transparent;
 }
+
+.loading-animation {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.loading-animation img {
+  width: 150px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.loading-animation p {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  color: var(--text-light);
+}
+
+/* Dark mode support */
+body.dark .loading-animation {
+  background: rgba(30, 41, 59, 0.9);
+}
+
+body.dark .loading-animation p {
+  color: var(--text-dark);
+}
