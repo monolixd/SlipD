@@ -134,16 +134,32 @@ uploadBtn.addEventListener("click", async () => {
     return;
   }
 
-  // แสดงแอนิเมชันรอและซ่อนส่วนผลลัพธ์
+  // Show loading animation
   loadingAnimation.style.display = "block";
   resultSection.style.display = "none";
 
-  // ล้างผลลัพธ์เดิมและรีเซ็ตตัวนับ
+  // Clear previous results
   resultsWrapper.innerHTML = "";
   resetCounters();
 
+  const fileCounter = loadingAnimation.querySelector(".file-counter");
+  const statusText = loadingAnimation.querySelector(".status-text");
+  const progress = loadingAnimation.querySelector(".progress");
+
   try {
     for (let i = 0; i < files.length; i++) {
+      // Update counter and progress
+      fileCounter.textContent = `${i + 1}/${files.length} ไฟล์`;
+      progress.style.width = `${((i + 1) / files.length) * 100}%`;
+      
+      if (i === 0) {
+        statusText.textContent = "เริ่มวิเคราะห์...";
+      } else if (i === files.length - 1) {
+        statusText.textContent = "กำลังประมวลผลไฟล์สุดท้าย...";
+      } else {
+        statusText.textContent = "กำลังวิเคราะห์...";
+      }
+
       const file = files[i];
       const formData = new FormData();
       formData.append("file", file);
@@ -187,9 +203,11 @@ uploadBtn.addEventListener("click", async () => {
         : "#4ade80",
     });
   } finally {
-    // ซ่อนแอนิเมชันรอและแสดงส่วนผลลัพธ์
-    loadingAnimation.style.display = "none";
-    resultSection.style.display = "block";
+    // Hide loading animation with a small delay for smooth transition
+    setTimeout(() => {
+      loadingAnimation.style.display = "none";
+      resultSection.style.display = "block";
+    }, 500);
   }
 });
 
