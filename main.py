@@ -11,31 +11,31 @@ from utils import draw_boxes_and_label
 
 app = FastAPI()
 
-# 🔧 ตั้งค่าพาธสำหรับ static files และ template
+#  ตั้งค่าพาธสำหรับ static files และ template
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# 🚀 โหลดโมเดล YOLOv8
+#  โหลดโมเดล YOLOv8
 try:
     model = YOLO("bestV8Nano.pt")
 except Exception as e:
-    raise RuntimeError(f"❌ โหลดโมเดลไม่สำเร็จ: {e}")
+    raise RuntimeError(f"โหลดโมเดลไม่สำเร็จ: {e}")
 
-# ✅ หน้า Loading
+#  หน้า Loading
 @app.get("/", response_class=HTMLResponse)
 async def loading_page(request: Request):
     return templates.TemplateResponse("loading.html", {"request": request})
 
-# ✅ หน้าเว็บหลัก
+#  หน้าเว็บหลัก
 @app.get("/home", response_class=HTMLResponse)
 async def home_page(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-# 🔄 รับภาพจากผู้ใช้ -> ตรวจจับ -> ส่งผลลัพธ์กลับ
+# รับภาพจากผู้ใช้ -> ตรวจจับ -> ส่งผลลัพธ์กลับ
 @app.post("/predict")
 async def predict_image(file: UploadFile = File(...)):
     try:
-        # ✅ อ่านไฟล์จากหน่วยความจำ (RAM) → ไม่บันทึกลง root
+        #  อ่านไฟล์จากหน่วยความจำ (RAM) → ไม่บันทึกลง root
         image_bytes = await file.read()
         image_array = np.frombuffer(image_bytes, np.uint8)
         image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
@@ -43,13 +43,13 @@ async def predict_image(file: UploadFile = File(...)):
         if image is None:
             raise HTTPException(status_code=400, detail="❌ ไม่สามารถอ่านภาพได้ กรุณาอัปโหลดไฟล์รูปภาพ")
 
-        # ✅ บีบอัดภาพให้เป็นขนาด 640x640 (ตาม YOLOv8)
+        # 640x640 
         image = cv2.resize(image, (640, 640), interpolation=cv2.INTER_AREA)
 
-        # ✅ รัน YOLOv8 ตรวจจับวัตถุ
+        
         results = model.predict(image, conf=0.5)
 
-        # ✅ วาด bounding box และดึงข้อมูล label + confidence
+        
         annotated_image, label_text, confidence = draw_boxes_and_label(image, results)
 
         # ✅ แปลงภาพให้สามารถแสดงบนเว็บ (base64)
