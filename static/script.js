@@ -28,6 +28,7 @@ const resultSection = document.getElementById("result-section");
 const resultsWrapper = document.getElementById("results-wrapper");
 const resetBtn = document.getElementById("reset-btn");
 const toggleDark = document.getElementById("toggle-dark");
+const loadingAnimation = document.getElementById("loading-animation");
 
 // Summary elements
 const realCount = document.getElementById("real-count");
@@ -133,26 +134,36 @@ uploadBtn.addEventListener("click", async () => {
     return;
   }
 
-  // ล้างผลลัพธ์เดิมและรีเซ็ตตัวนับ
+  // Show loading animation
+  loadingAnimation.style.display = "block";
+  resultSection.style.display = "none";
+
+  // Clear previous results
   resultsWrapper.innerHTML = "";
   resetCounters();
-  resultSection.style.display = "block";
 
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
+  const fileCounter = loadingAnimation.querySelector(".file-counter");
+  const statusText = loadingAnimation.querySelector(".status-text");
+  const progress = loadingAnimation.querySelector(".progress");
 
-    const formData = new FormData();
-    formData.append("file", file);
+  try {
+    for (let i = 0; i < files.length; i++) {
+      // Update counter and progress
+      fileCounter.textContent = `${i + 1}/${files.length} ไฟล์`;
+      progress.style.width = `${((i + 1) / files.length) * 100}%`;
+      
+      if (i === 0) {
+        statusText.textContent = "เริ่มวิเคราะห์...";
+      } else if (i === files.length - 1) {
+        statusText.textContent = "กำลังประมวลผลไฟล์สุดท้าย...";
+      } else {
+        statusText.textContent = "กำลังวิเคราะห์...";
+      }
 
-    // กรอบผลลัพธ์สำหรับแต่ละภาพ
-    const resultCard = document.createElement("div");
-    resultCard.className = "result-card";
-    resultCard.innerHTML = `
-      <p><i class='fas fa-spinner fa-spin'></i> กำลังประมวลผล...</p>
-    `;
-    resultsWrapper.appendChild(resultCard);
+      const file = files[i];
+      const formData = new FormData();
+      formData.append("file", file);
 
-    try {
       const res = await fetch("/predict", {
         method: "POST",
         body: formData,
@@ -161,7 +172,8 @@ uploadBtn.addEventListener("click", async () => {
       const data = await res.json();
       const imageDataUrl = `data:image/jpeg;base64,${data.image}`;
 
-      // เพิ่มคลาสตามผลการตรวจสอบ (จริง/ปลอม) และเพิ่มปุ่ม "ดูรูปเต็ม"
+      const resultCard = document.createElement("div");
+      resultCard.className = "result-card";
       resultCard.innerHTML = `
         <img src="${imageDataUrl}" class="result-image" />
         <p class="result-label ${data.label}">${data.label}</p>
@@ -171,20 +183,31 @@ uploadBtn.addEventListener("click", async () => {
         <button class="view-full-btn"><i class="fas fa-search-plus"></i> ดูรูปเต็ม</button>
       `;
 
-      // เพิ่ม Event Listener สำหรับปุ่ม "ดูรูปเต็ม"
       const viewFullBtn = resultCard.querySelector(".view-full-btn");
       viewFullBtn.addEventListener("click", () => {
         showFullImage(imageDataUrl, data.label);
       });
 
-      // อัพเดทตัวนับ
+      resultsWrapper.appendChild(resultCard);
       updateCounters(data.label);
-    } catch (error) {
-      resultCard.innerHTML = `
-        <p class="result-label error"><i class='fas fa-exclamation-triangle'></i> ประมวลผลไม่สำเร็จ</p>
-      `;
-      console.error("Error:", error);
     }
+  } catch (error) {
+    console.error("Error:", error);
+    Swal.fire({
+      title: "เกิดข้อผิดพลาด!",
+      text: "ไม่สามารถประมวลผลรูปภาพได้",
+      icon: "error",
+      confirmButtonText: "ตกลง",
+      confirmButtonColor: document.body.classList.contains("dark")
+        ? "#86efac"
+        : "#4ade80",
+    });
+  } finally {
+    // Hide loading animation with a small delay for smooth transition
+    setTimeout(() => {
+      loadingAnimation.style.display = "none";
+      resultSection.style.display = "block";
+    }, 500);
   }
 });
 
